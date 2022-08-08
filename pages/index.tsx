@@ -32,9 +32,9 @@ export async function getStaticProps() {
   let pokemons: SmallPokemon[] = data?.results.map((pokemon, i) => ({
     ...pokemon,
     id: i + 1,
-    img: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/versions/generation-ii/crystal/transparent/${
+    img: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/dream-world/${
       i + 1
-    }.png`,
+    }.svg`,
   }));
 
   return {

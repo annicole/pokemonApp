@@ -1,8 +1,15 @@
-import { Spacer, Text, useTheme } from "@nextui-org/react";
+import { Spacer, Text, useTheme, Link } from "@nextui-org/react";
 import Image from "next/image";
+import { useRouter } from "next/router";
+import NextLink from "next/link";
 
 export const Navbar = () => {
   const { theme } = useTheme();
+  const router = useRouter();
+
+  const onClick = (path: string) => {
+    router.push(path);
+  };
 
   return (
     <div
@@ -12,7 +19,7 @@ export const Navbar = () => {
         flexDirection: "row",
         alignItems: "center",
         justifyContent: "start",
-        padding: "0 20px",
+        padding: "0 50px",
         backgroundColor: theme?.colors.gray300.value,
       }}
     >
@@ -21,15 +28,24 @@ export const Navbar = () => {
         alt="icono de la app"
         width={70}
         height={70}
+        onClick={() => onClick("/")}
       />
-      <Text color="white" h2>
-        P
-      </Text>
-      <Text color="white" h3>
-        ókemon
-      </Text>
+      <NextLink href="/" passHref>
+        <Link>
+          <Text color="white" h2>
+            P
+          </Text>
+          <Text color="white" h3>
+            ókemon
+          </Text>
+        </Link>
+      </NextLink>
       <Spacer css={{ flex: 1 }} />
-      <Text color="white">Favoritos</Text>
+      <NextLink href="/favorites" passHref>
+        <Link>
+          <Text color="white">Favoritos</Text>
+        </Link>
+      </NextLink>
     </div>
   );
 };
