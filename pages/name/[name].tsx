@@ -1,20 +1,17 @@
-import { useState } from "react";
-import { GetStaticProps, NextPage } from "next";
-import { useRouter } from "next/router";
-import * as React from "react";
-import { Layout } from "../../components/layouts";
-import { GetStaticPaths } from "next";
-import { pokeApi } from "../../api";
-import { Pokemon } from "../../interfaces";
 import { Button, Card, Container, Grid, Image, Text } from "@nextui-org/react";
+import { GetStaticPaths, GetStaticProps, NextPage } from "next";
+import { useState } from "react";
+import { pokeApi } from "../../api";
+import { Layout } from "../../components/layouts";
+import { Pokemon, PokemonListResponse } from "../../interfaces";
 import { localFavorites } from "../../utils";
-import conffeti from 'canvas-confetti';
+import conffeti from "canvas-confetti";
 
 interface Props {
   pokemon: Pokemon;
 }
 
-const PokemonPage: NextPage<Props> = ({ pokemon }) => {
+const PokemonByName: NextPage<Props> = ({ pokemon }) => {
   const [isInFavorites, setIsInFavorites] = useState(
     localFavorites.existInFavorites(pokemon.id)
   );
@@ -23,20 +20,19 @@ const PokemonPage: NextPage<Props> = ({ pokemon }) => {
     localFavorites.toggleFavorites(pokemon.id);
     setIsInFavorites(!isInFavorites);
 
-    if(!isInFavorites){
+    if (!isInFavorites) {
       conffeti({
-        zIndex:9999,
-        particleCount:100,
-        spread:160,
-        angle:-100,
-        origin:{
-          x:1,
-          y:0
-        }
-      })
+        zIndex: 9999,
+        particleCount: 100,
+        spread: 160,
+        angle: -100,
+        origin: {
+          x: 1,
+          y: 0,
+        },
+      });
     }
   };
-
   return (
     <Layout title={pokemon.name}>
       <Grid.Container css={{ marginTop: "5px" }} gap={2}>
@@ -66,7 +62,7 @@ const PokemonPage: NextPage<Props> = ({ pokemon }) => {
                 ghost={!isInFavorites}
                 onClick={onToggleFavorite}
               >
-                {isInFavorites ? 'En favoritos' :  'Guardar en favoritos'}
+                {isInFavorites ? "En favoritos" : "Guardar en favoritos"}
               </Button>
             </Card.Header>
             <Card.Body>
@@ -105,22 +101,21 @@ const PokemonPage: NextPage<Props> = ({ pokemon }) => {
   );
 };
 
-// You should use getStaticPaths if you’re statically pre-rendering pages that use dynamic routes
-
 export const getStaticPaths: GetStaticPaths = async () => {
-  const pokemon151 = [...Array(151)].map((value, index) => `${index + 1}`);
+  const { data } = await pokeApi.get<PokemonListResponse>(`/pokemon?limit=151`);
+
   return {
-    paths: pokemon151.map((id) => ({
-      params: { id },
+    paths: data.results.map(({ name }) => ({
+      params: { name },
     })),
     fallback: false,
   };
 };
 
 export const getStaticProps: GetStaticProps = async ({ params }) => {
-  const { id } = params as { id: string };
+  const { name } = params as { name: string };
 
-  const { data } = await pokeApi.get<Pokemon>(`/pokemon/${id}`);
+  const { data } = await pokeApi.get<Pokemon>(`/pokemon/${name}`);
 
   const pokemon = {
     id: data.id,
@@ -135,4 +130,4 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   };
 };
 
-export default PokemonPage;
+export default PokemonByName;
